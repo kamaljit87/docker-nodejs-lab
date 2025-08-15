@@ -1,5 +1,6 @@
-// app.js
-const express = require("express");
+// app.js (ESM)
+import express from "express";
+
 const app = express();
 
 app.get("/", (_req, res) => {

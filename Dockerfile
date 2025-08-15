@@ -1,14 +1,16 @@
-# ---------- Build stage ----------
+
 FROM node:20-alpine AS builder
-ENV NODE_ENV=production
+ENV NODE_ENV=production     npm_config_fund=false     npm_config_audit=false
 WORKDIR /usr/src/app
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev --ignore-scripts &&     npm cache clean --force
+COPY package*.json ./
+RUN if [ -f package-lock.json ]; then       npm ci --omit=dev --ignore-scripts;     else       npm install --omit=dev --ignore-scripts;     fi &&     npm cache clean --force
 COPY --chown=node:node app.js ./
 
+# ---------- Runtime stage ----------
 FROM node:20-alpine AS runtime
-ENV NODE_ENV=production     
-ENV PORT=3000
+
+ENV NODE_ENV=production     PORT=3000
+
 WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/node_modules ./node_modules
